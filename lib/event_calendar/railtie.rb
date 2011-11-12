@@ -1,5 +1,6 @@
 require 'event_calendar'
 require 'event_calendar/calendar_helper'
+require 'event_calendar/calendar'
 require 'rails'
 
 module EventCalendar
