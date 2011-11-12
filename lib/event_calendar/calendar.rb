@@ -150,9 +150,7 @@ module EventCalendar
 
           week_background_table
 
-          # calendar row
-          self << %(<table class="ec-row-table" cellpadding="0" cellspacing="0">)
-          self << %(<tbody>)
+          calendar_row do
 
           # day numbers row
           self << %(<tr>)
@@ -250,7 +248,7 @@ module EventCalendar
             self << %(</tr>)
           end
 
-          self << %(</tbody></table>)
+          end
         end
       end
 
@@ -269,6 +267,13 @@ module EventCalendar
           self << %(<td class="ec-day-bg #{today_class} #{other_month_class}">&nbsp;</td>)
         end
         self << %(</tr></tbody></table>)
+      end
+
+      def calendar_row
+        self << %(<table class="ec-row-table" cellpadding="0" cellspacing="0">)
+        self << %(<tbody>)
+        yield
+        self << %(</tbody></table>)
       end
 
 
