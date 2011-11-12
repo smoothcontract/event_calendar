@@ -46,11 +46,9 @@ module EventCalendar
     #
     # For example usage, see README.
     #
-    def calendar(options = {}, &block)
-      block ||= Proc.new {|d| nil}
-
-      defaults = {
-        :year => (Time.zone || Time).now.year,
+    #
+    def defaults
+       { :year => (Time.zone || Time).now.year,
         :month => (Time.zone || Time).now.month,
         :abbrev => true,
         :first_day_of_week => 0,
@@ -75,6 +73,12 @@ module EventCalendar
         :use_javascript => true,
         :link_to_day_action => false
       }
+
+    end
+
+    def calendar(options = {}, &block)
+      block ||= Proc.new {|d| nil}
+
       options = defaults.merge options
 
       # default month name for the given number
