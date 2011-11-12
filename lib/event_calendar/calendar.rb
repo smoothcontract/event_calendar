@@ -7,32 +7,13 @@ module EventCalendar
           options[:month_name_text] ||= I18n.translate(:'date.month_names')[options[:month]]
         end
 
-        # make the height calculations
-        # tricky since multiple events in a day could force an increase in the set height
-        height = options[:day_names_height]
-        row_heights = cal_row_heights(options)
-        row_heights.each do |row_height|
-          height += row_height
-        end
-
         # the first and last days of this calendar month
         if options[:dates].is_a?(Range)
-          first = options[:dates].begin
-          last = options[:dates].end
+          @first = options[:dates].begin
+          @last = options[:dates].end
         else
-          first = Date.civil(options[:year], options[:month], 1)
-          last = Date.civil(options[:year], options[:month], -1)
-        end
-
-        # create the day names array [Sunday, Monday, etc...]
-        day_names = []
-        if options[:abbrev]
-          day_names.concat(I18n.translate(:'date.abbr_day_names'))
-        else
-          day_names.concat(I18n.translate(:'date.day_names'))
-        end
-        options[:first_day_of_week].times do
-          day_names.push(day_names.shift)
+          @first = Date.civil(options[:year], options[:month], 1)
+          @last = Date.civil(options[:year], options[:month], -1)
         end
 
         @options = options
@@ -46,7 +27,6 @@ module EventCalendar
             # container for all the calendar rows
             calendar_rows_container do
               add_weeks
-
             end
           end
         end
@@ -56,7 +36,8 @@ module EventCalendar
         @html
       end
 
-      attr_reader :row_num, :first_day_of_week, :last_day_of_week, :last_day_of_cal, :top, :first, :last, :options
+      attr_reader :row_num, :first_day_of_week, :last_day_of_week,
+        :last_day_of_cal, :top, :first, :last, :options
 
       # check if we should display without a background color
       def no_event_bg? event
@@ -96,10 +77,6 @@ module EventCalendar
           end
           self << %(</tr></thead></table>)
         end
-      end
-
-      def row_heights
-        cal_row_heights(options)
       end
 
       def height
@@ -169,7 +146,7 @@ module EventCalendar
 
       def add_week_row
         self << %(<div class="ec-row" style="top: #{top}px; height: #{row_heights[row_num]}px;">)
-        top += row_heights[row_num]
+        @top += row_heights[row_num]
 
         # this weeks background table
         self << %(<table class="ec-row-bg" cellpadding="0" cellspacing="0">)
@@ -283,12 +260,6 @@ module EventCalendar
 
         self << %(</tbody></table>)
         self << %(</div>)
-
-        # increment the calendar row we are on, and the week
-        @row_num += 1
-        @first_day_of_week += 7
-        @last_day_of_week += 7
-
       end
 
 
@@ -297,7 +268,7 @@ module EventCalendar
       # divided by the total number of calendar rows
       # this gets tricky, however, if there are too many event rows to fit into the row's height
       # then we need to add additional height
-      def cal_row_heights(options)
+      def row_heights
         # number of rows is the number of days in the event strips divided by 7
         num_cal_rows = options[:event_strips].first.size / 7
         # the row will be at least this big
