@@ -2,22 +2,7 @@ module EventCalendar
   module CalendarHelper
     class Calendar
       def initialize options, block=nil
-        # default month name for the given number
-        if options[:show_header]
-          options[:month_name_text] ||= I18n.translate(:'date.month_names')[options[:month]]
-        end
-
-        # the first and last days of this calendar month
-        if options[:dates].is_a?(Range)
-          @first = options[:dates].begin
-          @last = options[:dates].end
-        else
-          @first = Date.civil(options[:year], options[:month], 1)
-          @last = Date.civil(options[:year], options[:month], -1)
-        end
-
-        @options = options
-        @html = ""
+        setup options
 
         outer_calendar_container do
           table_header_and_links
@@ -36,6 +21,12 @@ module EventCalendar
         @html
       end
 
+      def << value
+        @html << value
+      end
+
+      private
+
       attr_reader :row_num, :first_day_of_week, :last_day_of_week,
         :last_day_of_cal, :top, :first, :last, :options
 
@@ -44,11 +35,25 @@ module EventCalendar
         options[:use_all_day] && !event.all_day && event.days == 0
       end
 
-      def << value
-        @html << value
+      def setup options
+        # default month name for the given number
+        if options[:show_header]
+          options[:month_name_text] ||= I18n.translate(:'date.month_names')[options[:month]]
+        end
+
+        # the first and last days of this calendar month
+        if options[:dates].is_a?(Range)
+          @first = options[:dates].begin
+          @last = options[:dates].end
+        else
+          @first = Date.civil(options[:year], options[:month], 1)
+          @last = Date.civil(options[:year], options[:month], -1)
+        end
+
+        @options = options
+        @html = ""
       end
 
-      private
 
       def outer_calendar_container
         self << %(<div class="ec-calendar")
@@ -227,16 +232,14 @@ module EventCalendar
         # if the event (after it has been clipped) starts on this date,
         # then create a new cell that spans the number of days
         if starts_this_day? event, day
-          class_name = event.class.name.tableize.singularize
-
           cell_container event do
-            add_arrows
+            add_arrows event
 
             if no_event_bg? event
               self << %(<div class="ec-bullet" style="background-color: #{event.color};"></div>)
               # make sure anchor text is the event color
               # here b/c CSS 'inherit' color doesn't work in all browsers
-              self << %(<style type="text/css">.ec-#{class_name}-#{event.id} a { color: #{event.color}; }</style>)
+              self << %(<style type="text/css">.ec-#{css_for(event)}-#{event.id} a { color: #{event.color}; }</style>)
             end
 
             if @block
@@ -279,23 +282,23 @@ module EventCalendar
         self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
         if options[:use_javascript]
           # custom attributes needed for javascript event highlighting
-          self << %(data-event-id="#{event.id}" data-event-class="#{class_name}" data-color="#{event.color}" )
+          self << %(data-event-id="#{event.id}" data-event-class="#{css_for(event)}" data-color="#{event.color}" )
         end
       end
 
       def add_arrows event
         # add a left arrow if event is clipped at the beginning
-        if event.start_at.to_date < dates[0]
+        if event.start_at.to_date < first_day_in_week_for(event)
           self << %(<div class="ec-left-arrow"></div>)
         end
         # add a right arrow if event is clipped at the end
-        if event.end_at.to_date > dates[1]
+        if event.end_at.to_date > last_day_in_week_for(event)
           self << %(<div class="ec-right-arrow"></div>)
         end
       end
 
       def default_cell_content event
-        self << %(<a href="/#{class_name.pluralize}/#{event.id}" title="#{(event.name)}">#{(event.name)}</a>)
+        self << %(<a href="/#{css_for(event).pluralize}/#{event.id}" title="#{(event.name)}">#{(event.name)}</a>)
       end
 
       def css_for event
