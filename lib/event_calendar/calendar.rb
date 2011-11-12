@@ -230,25 +230,6 @@ module EventCalendar
           class_name = event.class.name.tableize.singularize
 
           cell_container event do
-            if class_name != "event"
-              self << %(ec-#{class_name} )
-            end
-            if no_event_bg? event
-              self << %(ec-event-no-bg" )
-              self << %(style="color: #{event.color}; )
-            else
-              self << %(ec-event-bg" )
-              self << %(style="background-color: #{event.color}; )
-            end
-
-            self << %(padding-top: #{options[:event_padding_top]}px; )
-            self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
-            if options[:use_javascript]
-              # custom attributes needed for javascript event highlighting
-              self << %(data-event-id="#{event.id}" data-event-class="#{class_name}" data-color="#{event.color}" )
-            end
-            self << %(>)
-
             # add a left arrow if event is clipped at the beginning
             if event.start_at.to_date < dates[0]
               self << %(<div class="ec-left-arrow"></div>)
@@ -282,7 +263,23 @@ module EventCalendar
 
         self << %(<td class="ec-event-cell" colspan="#{col_span}" )
         self << %(style="padding-top: #{options[:event_margin]}px;">)
-        self << %(<div id="ec-#{css_for(event)}-#{event.id}" class="ec-event )
+        self << %(<div id="ec-#{css_for(event)}-#{event.id}" class="ec-#{css_for(event)}-#{event.id} )
+
+        if no_event_bg? event
+          self << %(ec-event-no-bg" )
+          self << %(style="color: #{event.color}; )
+        else
+          self << %(ec-event-bg" )
+          self << %(style="background-color: #{event.color}; )
+        end
+
+        self << %(padding-top: #{options[:event_padding_top]}px; )
+        self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
+        if options[:use_javascript]
+          # custom attributes needed for javascript event highlighting
+          self << %(data-event-id="#{event.id}" data-event-class="#{class_name}" data-color="#{event.color}" )
+        end
+        self << %(>)
         yield
 
         self << %(</div></td>)
