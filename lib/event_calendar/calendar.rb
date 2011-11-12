@@ -226,7 +226,7 @@ module EventCalendar
         dates = event.clip_range(first_day_of_week, last_day_of_week)
         # if the event (after it has been clipped) starts on this date,
         # then create a new cell that spans the number of days
-        if dates[0] == day.to_date
+        if starts_this_day? event, day
           class_name = event.class.name.tableize.singularize
 
           self << %(<td class="ec-event-cell" colspan="#{(dates[1]-dates[0]).to_i + 1}" )
@@ -277,8 +277,22 @@ module EventCalendar
 
           self << %(</div></td>)
         end
+      end
 
+      def starts_this_day? event, day
+        first_day_in_week_for(event) == day.to_date
+      end
 
+      def first_day_in_week_for event
+        dates_within_this_week_for(event)[0]
+      end
+
+      def last_day_in_week_for event
+        dates_within_this_week_for(event)[1]
+      end
+
+      def dates_within_this_week_for event
+        event.clip_range(first_day_of_week, last_day_of_week)
       end
 
       def empty_cell_and_container
