@@ -45,136 +45,8 @@ module EventCalendar
             add_day_names
             # container for all the calendar rows
             calendar_rows_container do
-              # initialize loop variables
-              first_day_of_week = beginning_of_week(first, options[:first_day_of_week])
-              last_day_of_week = end_of_week(first, options[:first_day_of_week])
-              last_day_of_cal = end_of_week(last, options[:first_day_of_week])
-              row_num = 0
-              top = 0
+              add_weeks
 
-              # go through a week at a time, until we reach the end of the month
-              while(last_day_of_week <= last_day_of_cal)
-                 self << %(<div class="ec-row" style="top: #{top}px; height: #{row_heights[row_num]}px;">)
-                top += row_heights[row_num]
-
-                # this weeks background table
-                 self << %(<table class="ec-row-bg" cellpadding="0" cellspacing="0">)
-                 self << %(<tbody><tr>)
-                first_day_of_week.upto(first_day_of_week+6) do |day|
-                  today_class = (day == Date.today) ? "ec-today-bg" : ""
-                  other_month_class = (day < first) || (day > last) ? 'ec-other-month-bg' : ''
-                   self << %(<td class="ec-day-bg #{today_class} #{other_month_class}">&nbsp;</td>)
-                end
-                 self << %(</tr></tbody></table>)
-
-                # calendar row
-                 self << %(<table class="ec-row-table" cellpadding="0" cellspacing="0">)
-                 self << %(<tbody>)
-
-                # day numbers row
-                 self << %(<tr>)
-                first_day_of_week.upto(last_day_of_week) do |day|
-                   self << %(<td class="ec-day-header )
-                   self << %(ec-today-header ) if options[:show_today] and (day == Date.today)
-                   self << %(ec-other-month-header ) if (day < first) || (day > last)
-                   self << %(ec-weekend-day-header) if weekend?(day)
-                   self << %(" style="height: #{options[:day_nums_height]}px;">)
-                  if options[:link_to_day_action]
-                     self << day_link(day.day, day, options[:link_to_day_action])
-                  else
-                     self << %(#{day.day})
-                  end
-                   self << %(</td>)
-                end
-                 self << %(</tr>)
-
-                # event rows for this day
-                # for each event strip, create a new table row
-                options[:event_strips].each do |strip|
-                   self << %(<tr>)
-                  # go through through the strip, for the entries that correspond to the days of this week
-                  strip[row_num*7, 7].each_with_index do |event, index|
-                    day = first_day_of_week + index
-
-                    if event
-                      # get the dates of this event that fit into this week
-                      dates = event.clip_range(first_day_of_week, last_day_of_week)
-                      # if the event (after it has been clipped) starts on this date,
-                      # then create a new cell that spans the number of days
-                      if dates[0] == day.to_date
-                        class_name = event.class.name.tableize.singularize
-
-                         self << %(<td class="ec-event-cell" colspan="#{(dates[1]-dates[0]).to_i + 1}" )
-                         self << %(style="padding-top: #{options[:event_margin]}px;">)
-                         self << %(<div id="ec-#{class_name}-#{event.id}" class="ec-event )
-                        if class_name != "event"
-                           self << %(ec-#{class_name} )
-                        end
-                        if no_event_bg? event
-                           self << %(ec-event-no-bg" )
-                           self << %(style="color: #{event.color}; )
-                        else
-                           self << %(ec-event-bg" )
-                           self << %(style="background-color: #{event.color}; )
-                        end
-
-                         self << %(padding-top: #{options[:event_padding_top]}px; )
-                         self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
-                        if options[:use_javascript]
-                          # custom attributes needed for javascript event highlighting
-                           self << %(data-event-id="#{event.id}" data-event-class="#{class_name}" data-color="#{event.color}" )
-                        end
-                         self << %(>)
-
-                        # add a left arrow if event is clipped at the beginning
-                        if event.start_at.to_date < dates[0]
-                           self << %(<div class="ec-left-arrow"></div>)
-                        end
-                        # add a right arrow if event is clipped at the end
-                        if event.end_at.to_date > dates[1]
-                           self << %(<div class="ec-right-arrow"></div>)
-                        end
-
-                        if no_event_bg? event
-                           self << %(<div class="ec-bullet" style="background-color: #{event.color};"></div>)
-                          # make sure anchor text is the event color
-                          # here b/c CSS 'inherit' color doesn't work in all browsers
-                           self << %(<style type="text/css">.ec-#{class_name}-#{event.id} a { color: #{event.color}; }</style>)
-                        end
-
-                        if block_given?
-                          # add the additional html that was passed as a block to this helper
-                           self << block.call({:event => event, :day => day.to_date, :options => options})
-                        else
-                          # default content in case nothing is passed in
-                           self << %(<a href="/#{class_name.pluralize}/#{event.id}" title="#{(event.name)}">#{(event.name)}</a>)
-                        end
-
-                         self << %(</div></td>)
-                      end
-
-                    else
-                      # there wasn't an event, so create an empty cell and container
-                       self << %(<td class="ec-event-cell ec-no-event-cell" )
-                       self << %(style="padding-top: #{options[:event_margin]}px;">)
-                       self << %(<div class="ec-event" )
-                       self << %(style="padding-top: #{options[:event_padding_top]}px; )
-                       self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
-                       self << %(>)
-                       self << %(&nbsp;</div></td>)
-                    end
-                  end
-                   self << %(</tr>)
-                end
-
-                 self << %(</tbody></table>)
-                 self << %(</div>)
-
-                # increment the calendar row we are on, and the week
-                row_num += 1
-                first_day_of_week += 7
-                last_day_of_week += 7
-              end
             end
           end
         end
@@ -184,7 +56,7 @@ module EventCalendar
         @html
       end
 
-      attr_reader :options
+      attr_reader :row_num, :first_day_of_week, :last_day_of_week, :last_day_of_cal, :top, :first, :last, :options
 
       # check if we should display without a background color
       def no_event_bg? event
@@ -192,7 +64,7 @@ module EventCalendar
       end
 
       def << value
-         @html << value
+        @html << value
       end
 
       private
@@ -274,6 +146,151 @@ module EventCalendar
 
         self << %(</div>)
       end
+
+      def add_weeks
+        # initialize loop variables
+        @first_day_of_week = beginning_of_week(first, options[:first_day_of_week])
+        @last_day_of_week = end_of_week(first, options[:first_day_of_week])
+        @last_day_of_cal = end_of_week(last, options[:first_day_of_week])
+        @row_num = 0
+        @top = 0
+
+        # go through a week at a time, until we reach the end of the month
+        while(last_day_of_week <= last_day_of_cal)
+          add_week_row
+
+          @top += row_heights[row_num]
+          # increment the calendar row we are on, and the week
+          @row_num += 1
+          @first_day_of_week += 7
+          @last_day_of_week += 7
+        end
+      end
+
+      def add_week_row
+        self << %(<div class="ec-row" style="top: #{top}px; height: #{row_heights[row_num]}px;">)
+        top += row_heights[row_num]
+
+        # this weeks background table
+        self << %(<table class="ec-row-bg" cellpadding="0" cellspacing="0">)
+        self << %(<tbody><tr>)
+        first_day_of_week.upto(first_day_of_week+6) do |day|
+          today_class = (day == Date.today) ? "ec-today-bg" : ""
+          other_month_class = (day < first) || (day > last) ? 'ec-other-month-bg' : ''
+          self << %(<td class="ec-day-bg #{today_class} #{other_month_class}">&nbsp;</td>)
+        end
+        self << %(</tr></tbody></table>)
+
+        # calendar row
+        self << %(<table class="ec-row-table" cellpadding="0" cellspacing="0">)
+        self << %(<tbody>)
+
+        # day numbers row
+        self << %(<tr>)
+        first_day_of_week.upto(last_day_of_week) do |day|
+          self << %(<td class="ec-day-header )
+          self << %(ec-today-header ) if options[:show_today] and (day == Date.today)
+          self << %(ec-other-month-header ) if (day < first) || (day > last)
+          self << %(ec-weekend-day-header) if weekend?(day)
+          self << %(" style="height: #{options[:day_nums_height]}px;">)
+          if options[:link_to_day_action]
+            self << day_link(day.day, day, options[:link_to_day_action])
+          else
+            self << %(#{day.day})
+          end
+          self << %(</td>)
+        end
+        self << %(</tr>)
+
+        # event rows for this day
+        # for each event strip, create a new table row
+        options[:event_strips].each do |strip|
+          self << %(<tr>)
+          # go through through the strip, for the entries that correspond to the days of this week
+          strip[row_num*7, 7].each_with_index do |event, index|
+            day = first_day_of_week + index
+
+            if event
+              # get the dates of this event that fit into this week
+              dates = event.clip_range(first_day_of_week, last_day_of_week)
+              # if the event (after it has been clipped) starts on this date,
+              # then create a new cell that spans the number of days
+              if dates[0] == day.to_date
+                class_name = event.class.name.tableize.singularize
+
+                self << %(<td class="ec-event-cell" colspan="#{(dates[1]-dates[0]).to_i + 1}" )
+                self << %(style="padding-top: #{options[:event_margin]}px;">)
+                self << %(<div id="ec-#{class_name}-#{event.id}" class="ec-event )
+                if class_name != "event"
+                  self << %(ec-#{class_name} )
+                end
+                if no_event_bg? event
+                  self << %(ec-event-no-bg" )
+                  self << %(style="color: #{event.color}; )
+                else
+                  self << %(ec-event-bg" )
+                  self << %(style="background-color: #{event.color}; )
+                end
+
+                self << %(padding-top: #{options[:event_padding_top]}px; )
+                self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
+                if options[:use_javascript]
+                  # custom attributes needed for javascript event highlighting
+                  self << %(data-event-id="#{event.id}" data-event-class="#{class_name}" data-color="#{event.color}" )
+                end
+                self << %(>)
+
+                # add a left arrow if event is clipped at the beginning
+                if event.start_at.to_date < dates[0]
+                  self << %(<div class="ec-left-arrow"></div>)
+                end
+                # add a right arrow if event is clipped at the end
+                if event.end_at.to_date > dates[1]
+                  self << %(<div class="ec-right-arrow"></div>)
+                end
+
+                if no_event_bg? event
+                  self << %(<div class="ec-bullet" style="background-color: #{event.color};"></div>)
+                  # make sure anchor text is the event color
+                  # here b/c CSS 'inherit' color doesn't work in all browsers
+                  self << %(<style type="text/css">.ec-#{class_name}-#{event.id} a { color: #{event.color}; }</style>)
+                end
+
+                if block_given?
+                  # add the additional html that was passed as a block to this helper
+                  self << block.call({:event => event, :day => day.to_date, :options => options})
+                else
+                  # default content in case nothing is passed in
+                  self << %(<a href="/#{class_name.pluralize}/#{event.id}" title="#{(event.name)}">#{(event.name)}</a>)
+                end
+
+                self << %(</div></td>)
+              end
+
+            else
+              # there wasn't an event, so create an empty cell and container
+              self << %(<td class="ec-event-cell ec-no-event-cell" )
+              self << %(style="padding-top: #{options[:event_margin]}px;">)
+              self << %(<div class="ec-event" )
+              self << %(style="padding-top: #{options[:event_padding_top]}px; )
+              self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
+              self << %(>)
+              self << %(&nbsp;</div></td>)
+            end
+          end
+          self << %(</tr>)
+        end
+
+        self << %(</tbody></table>)
+        self << %(</div>)
+
+        # increment the calendar row we are on, and the week
+        @row_num += 1
+        @first_day_of_week += 7
+        @last_day_of_week += 7
+
+      end
+
 
       # calculate the height of each row
       # by default, it will be the height option minus the day names height,
