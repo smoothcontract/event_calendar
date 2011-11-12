@@ -148,15 +148,7 @@ module EventCalendar
         week_row_container do
           @top += row_heights[row_num]
 
-          # this weeks background table
-          self << %(<table class="ec-row-bg" cellpadding="0" cellspacing="0">)
-          self << %(<tbody><tr>)
-          first_day_of_week.upto(first_day_of_week+6) do |day|
-            today_class = (day == Date.today) ? "ec-today-bg" : ""
-            other_month_class = (day < first) || (day > last) ? 'ec-other-month-bg' : ''
-            self << %(<td class="ec-day-bg #{today_class} #{other_month_class}">&nbsp;</td>)
-          end
-          self << %(</tr></tbody></table>)
+          week_background_table
 
           # calendar row
           self << %(<table class="ec-row-table" cellpadding="0" cellspacing="0">)
@@ -267,6 +259,18 @@ module EventCalendar
         yield
         self << %(</div>)
       end
+
+      def week_background_table
+        self << %(<table class="ec-row-bg" cellpadding="0" cellspacing="0">)
+        self << %(<tbody><tr>)
+        first_day_of_week.upto(last_day_of_week) do |day|
+          today_class = (day == Date.today) ? "ec-today-bg" : ""
+          other_month_class = (day < first) || (day > last) ? 'ec-other-month-bg' : ''
+          self << %(<td class="ec-day-bg #{today_class} #{other_month_class}">&nbsp;</td>)
+        end
+        self << %(</tr></tbody></table>)
+      end
+
 
 
 
