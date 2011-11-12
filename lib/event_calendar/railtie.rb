@@ -1,5 +1,6 @@
 require 'event_calendar'
 require 'event_calendar/calendar_helper'
+require 'event_calendar/calendar'
 require 'rails'
 
 module EventCalendar
@@ -14,3 +15,6 @@ module EventCalendar
     end
   end
 end
+
+# Support other ORMs
+require 'event_calendar/orm/mongoid' if defined? Mongoid
