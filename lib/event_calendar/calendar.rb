@@ -39,22 +39,7 @@ module EventCalendar
         @html = ""
 
         outer_calendar_container do
-          # table header, including the monthname and links to prev & next month
-          if options[:show_header]
-            @html << %(<table class="ec-calendar-header" cellpadding="0" cellspacing="0">)
-            @html << %(<thead><tr>)
-            if options[:previous_month_text] or options[:next_month_text]
-              @html << %(<th colspan="2" class="ec-month-nav ec-previous-month">#{options[:previous_month_text]}</th>)
-              colspan = 3
-            else
-              colspan = 7
-            end
-            @html << %(<th colspan="#{colspan}" class="ec-month-name">#{options[:month_name_text]}</th>)
-            if options[:next_month_text]
-              @html << %(<th colspan="2" class="ec-month-nav ec-next-month">#{options[:next_month_text]}</th>)
-            end
-            @html << %(</tr></thead></table>)
-          end
+          table_header_and_links
 
           # body container (holds day names and the calendar rows)
           @html << %(<div class="ec-body" style="height: #{height}px;">)
@@ -230,6 +215,27 @@ module EventCalendar
 
         self << %(</div>)
       end
+
+      def table_header_and_links
+        if options[:show_header]
+          self << %(<table class="ec-calendar-header" cellpadding="0" cellspacing="0">)
+          self << %(<thead><tr>)
+          if options[:previous_month_text] or options[:next_month_text]
+            self << %(<th colspan="2" class="ec-month-nav ec-previous-month">#{options[:previous_month_text]}</th>)
+            colspan = 3
+          else
+            colspan = 7
+          end
+
+          self << %(<th colspan="#{colspan}" class="ec-month-name">#{options[:month_name_text]}</th>)
+
+          if options[:next_month_text]
+            self << %(<th colspan="2" class="ec-month-nav ec-next-month">#{options[:next_month_text]}</th>)
+          end
+          self << %(</tr></thead></table>)
+        end
+      end
+
 
       # calculate the height of each row
       # by default, it will be the height option minus the day names height,
