@@ -230,14 +230,7 @@ module EventCalendar
           class_name = event.class.name.tableize.singularize
 
           cell_container event do
-            # add a left arrow if event is clipped at the beginning
-            if event.start_at.to_date < dates[0]
-              self << %(<div class="ec-left-arrow"></div>)
-            end
-            # add a right arrow if event is clipped at the end
-            if event.end_at.to_date > dates[1]
-              self << %(<div class="ec-right-arrow"></div>)
-            end
+            add_arrows
 
             if no_event_bg? event
               self << %(<div class="ec-bullet" style="background-color: #{event.color};"></div>)
@@ -246,12 +239,12 @@ module EventCalendar
               self << %(<style type="text/css">.ec-#{class_name}-#{event.id} a { color: #{event.color}; }</style>)
             end
 
-            if block_given?
+            if @block
               # add the additional html that was passed as a block to this helper
-              self << block.call({:event => event, :day => day.to_date, :options => options})
+              self << @block.call({:event => event, :day => day.to_date, :options => options})
             else
               # default content in case nothing is passed in
-              self << %(<a href="/#{class_name.pluralize}/#{event.id}" title="#{(event.name)}">#{(event.name)}</a>)
+              default_cell_content event
             end
 
           end
@@ -290,10 +283,24 @@ module EventCalendar
         end
       end
 
+      def add_arrows event
+        # add a left arrow if event is clipped at the beginning
+        if event.start_at.to_date < dates[0]
+          self << %(<div class="ec-left-arrow"></div>)
+        end
+        # add a right arrow if event is clipped at the end
+        if event.end_at.to_date > dates[1]
+          self << %(<div class="ec-right-arrow"></div>)
+        end
+      end
+
+      def default_cell_content event
+        self << %(<a href="/#{class_name.pluralize}/#{event.id}" title="#{(event.name)}">#{(event.name)}</a>)
+      end
+
       def css_for event
         event.class.name.tableize.singularize
       end
-
 
       def starts_this_day? event, day
         first_day_in_week_for(event) == day.to_date
