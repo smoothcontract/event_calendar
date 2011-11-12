@@ -21,8 +21,8 @@ module EventCalendar
         @html
       end
 
-      def << value
-        @html << value
+      def << html
+        @html << html
       end
 
       private
@@ -44,10 +44,10 @@ module EventCalendar
         # the first and last days of this calendar month
         if options[:dates].is_a?(Range)
           @first = options[:dates].begin
-          @last = options[:dates].end
+          @last  = options[:dates].end
         else
-          @first = Date.civil(options[:year], options[:month], 1)
-          @last = Date.civil(options[:year], options[:month], -1)
+          @first = Date.civil(options[:year], options[:month],  1)
+          @last  = Date.civil(options[:year], options[:month], -1)
         end
 
         @options = options
@@ -111,10 +111,11 @@ module EventCalendar
       def day_names
         day_names = []
         if options[:abbrev]
-          day_names.concat(I18n.translate(:'date.abbr_day_names'))
+          day_names.concat I18n.translate(:'date.abbr_day_names')
         else
-          day_names.concat(I18n.translate(:'date.day_names'))
+          day_names.concat I18n.translate(:'date.day_names')
         end
+
         options[:first_day_of_week].times do
           day_names.push(day_names.shift)
         end
@@ -287,13 +288,15 @@ module EventCalendar
       end
 
       def add_arrows event
-        # add a left arrow if event is clipped at the beginning
-        if event.start_at.to_date < first_day_in_week_for(event)
-          self << %(<div class="ec-left-arrow"></div>)
-        end
-        # add a right arrow if event is clipped at the end
-        if event.end_at.to_date > last_day_in_week_for(event)
-          self << %(<div class="ec-right-arrow"></div>)
+        self << %(<div class="ec-left-arrow"></div>)  if clipped? :at_beginning, event
+        self << %(<div class="ec-right-arrow"></div>) if clipped? :at_end, event
+      end
+
+      def clipped? where, event
+        if where == :at_beginning
+          event.start_at.to_date < first_day_in_week_for(event)
+        elsif where == :at_end
+          event.end_at.  to_date > last_day_in_week_for(event)
         end
       end
 
