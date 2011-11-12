@@ -265,6 +265,15 @@ module EventCalendar
         self << %(style="padding-top: #{options[:event_margin]}px;">)
         self << %(<div id="ec-#{css_for(event)}-#{event.id}" class="ec-#{css_for(event)}-#{event.id} )
 
+        cell_attributes event
+        self << %(>)
+
+        yield
+
+        self << %(</div></td>)
+      end
+
+      def cell_attributes event
         if no_event_bg? event
           self << %(ec-event-no-bg" )
           self << %(style="color: #{event.color}; )
@@ -279,10 +288,6 @@ module EventCalendar
           # custom attributes needed for javascript event highlighting
           self << %(data-event-id="#{event.id}" data-event-class="#{class_name}" data-color="#{event.color}" )
         end
-        self << %(>)
-        yield
-
-        self << %(</div></td>)
       end
 
       def css_for event
