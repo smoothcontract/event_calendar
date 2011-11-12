@@ -151,22 +151,7 @@ module EventCalendar
           week_background_table
 
           calendar_row do
-            # day numbers row
-            self << %(<tr>)
-            first_day_of_week.upto(last_day_of_week) do |day|
-              self << %(<td class="ec-day-header )
-              self << %(ec-today-header ) if options[:show_today] and (day == Date.today)
-              self << %(ec-other-month-header ) if (day < first) || (day > last)
-              self << %(ec-weekend-day-header) if weekend?(day)
-              self << %(" style="height: #{options[:day_nums_height]}px;">)
-              if options[:link_to_day_action]
-                self << day_link(day.day, day, options[:link_to_day_action])
-              else
-                self << %(#{day.day})
-              end
-              self << %(</td>)
-            end
-            self << %(</tr>)
+            day_numbers_row
 
             # event rows for this day
             # for each event strip, create a new table row
@@ -274,6 +259,25 @@ module EventCalendar
         yield
         self << %(</tbody></table>)
       end
+
+      def day_numbers_row
+        self << %(<tr>)
+        first_day_of_week.upto(last_day_of_week) do |day|
+          self << %(<td class="ec-day-header )
+          self << %(ec-today-header ) if options[:show_today] and (day == Date.today)
+          self << %(ec-other-month-header ) if (day < first) || (day > last)
+          self << %(ec-weekend-day-header) if weekend?(day)
+          self << %(" style="height: #{options[:day_nums_height]}px;">)
+          if options[:link_to_day_action]
+            self << day_link(day.day, day, options[:link_to_day_action])
+          else
+            self << %(#{day.day})
+          end
+          self << %(</td>)
+        end
+        self << %(</tr>)
+      end
+
 
 
 
