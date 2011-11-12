@@ -102,8 +102,6 @@ module EventCalendar
                       # if the event (after it has been clipped) starts on this date,
                       # then create a new cell that spans the number of days
                       if dates[0] == day.to_date
-                        # check if we should display the bg color or not
-                        no_bg = no_event_bg?(event, options)
                         class_name = event.class.name.tableize.singularize
 
                         @html << %(<td class="ec-event-cell" colspan="#{(dates[1]-dates[0]).to_i + 1}" )
@@ -112,7 +110,7 @@ module EventCalendar
                         if class_name != "event"
                           @html << %(ec-#{class_name} )
                         end
-                        if no_bg
+                        if no_event_bg? event
                           @html << %(ec-event-no-bg" )
                           @html << %(style="color: #{event.color}; )
                         else
@@ -137,7 +135,7 @@ module EventCalendar
                           @html << %(<div class="ec-right-arrow"></div>)
                         end
 
-                        if no_bg
+                        if no_event_bg? event
                           @html << %(<div class="ec-bullet" style="background-color: #{event.color};"></div>)
                           # make sure anchor text is the event color
                           # here b/c CSS 'inherit' color doesn't work in all browsers
@@ -149,7 +147,7 @@ module EventCalendar
                           @html << block.call({:event => event, :day => day.to_date, :options => options})
                         else
                           # default content in case nothing is passed in
-                          @html << %(<a href="/#{class_name.pluralize}/#{event.id}" title="#{h(event.name)}">#{h(event.name)}</a>)
+                          @html << %(<a href="/#{class_name.pluralize}/#{event.id}" title="#{(event.name)}">#{(event.name)}</a>)
                         end
 
                         @html << %(</div></td>)
@@ -188,6 +186,10 @@ module EventCalendar
 
       attr_reader :options
 
+      # check if we should display without a background color
+      def no_event_bg? event
+        options[:use_all_day] && !event.all_day && event.days == 0
+      end
 
       def << value
         @html << value
@@ -223,6 +225,19 @@ module EventCalendar
           self << %(</tr></thead></table>)
         end
       end
+
+      def row_heights
+        cal_row_heights(options)
+      end
+
+      def height
+        height = options[:day_names_height]
+        row_heights.each do |row_height|
+          height += row_height
+        end
+        height
+      end
+
 
       def body_container_for_day_names_and_rows
         self << %(<div class="ec-body" style="height: #{height}px;">)
