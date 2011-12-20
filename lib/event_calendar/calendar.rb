@@ -235,9 +235,6 @@ module EventCalendar
 
             if no_event_bg? event
               self << %(<div class="ec-bullet" style="background-color: #{event.color};"></div>)
-              # make sure anchor text is the event color
-              # here b/c CSS 'inherit' color doesn't work in all browsers
-              self << %(<style type="text/css">.ec-#{css_for(event)}-#{event.id} a { color: #{event.color}; }</style>)
             end
 
             if @block

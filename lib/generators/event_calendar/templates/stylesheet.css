@@ -169,6 +169,9 @@ a.ec-day-link {
   overflow: hidden;
   white-space: nowrap;
 }
+.ec-event a {
+	color: white;
+}
 
 .ec-event :hover {
   /* doesn't look as good as js highlighting */
