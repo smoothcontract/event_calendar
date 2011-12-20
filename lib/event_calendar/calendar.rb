@@ -257,7 +257,7 @@ module EventCalendar
 
         self << %(<td class="ec-event-cell" colspan="#{col_span}" )
         self << %(style="padding-top: #{options[:event_margin]}px;">)
-        self << %(<div id="ec-#{css_for(event)}-#{event.id}" class="ec-#{css_for(event)}-#{event.id} )
+        self << %(<div class="ec-#{css_for(event)} ec-#{css_for(event)}-#{event.id} )
 
         cell_attributes event
         self << %(>)
