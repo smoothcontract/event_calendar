@@ -54,7 +54,6 @@ module EventCalendar
         @html = ""
       end
 
-
       def outer_calendar_container
         self << %(<div class="ec-calendar")
         self << %(style="width: #{options[:width]}px;") if options[:width]
@@ -91,7 +90,6 @@ module EventCalendar
         end
         height
       end
-
 
       def body_container_for_day_names_and_rows
         self << %(<div class="ec-body" style="height: #{height}px;">)
@@ -331,8 +329,8 @@ module EventCalendar
         self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
         self << %(>)
         self << %(&nbsp;</div></td>)
-
       end
+      
       # calculate the height of each row
       # by default, it will be the height option minus the day names height,
       # divided by the total number of calendar rows
