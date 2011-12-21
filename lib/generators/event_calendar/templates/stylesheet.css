@@ -159,7 +159,6 @@ a.ec-day-link {
 }
 
 .ec-event {
-  color: white;
   padding-right: 1px;
   padding-left: 11px;
   -webkit-border-radius: 3px;
@@ -168,14 +167,13 @@ a.ec-day-link {
 	border-radius: 3px;
   overflow: hidden;
   white-space: nowrap;
+	background-color: red;
 }
 .ec-event a {
 	color: white;
 }
-
-.ec-event :hover {
-  /* doesn't look as good as js highlighting */
-  /* background-color: #2eac6a; */
+.ec-event.ec-hover {
+	background-color: green;
 }
 
 .ec-event-bg a {
@@ -184,13 +182,16 @@ a.ec-day-link {
 
 /* used to distinguish non-all_day events */
 .ec-event-no-bg {
+	background-color: white;
   position: relative;
-  /* padding-left: 5px; */
 }
 
-.ec-event-no-bg a {
-  /* isn't implemented in all browsers */
-  color: inherit;
+.ec-event.ec-event-no-bg a {
+	color: red;
+}
+.ec-event.ec-event-no-bg a:hover {
+	background-color: red;
+	color: white;
 }
 
 .ec-event-time {
@@ -239,4 +240,8 @@ a.ec-day-link {
   -khtml-border-radius: 2px;
   -moz-border-radius: 2px;
   border-radius: 2px;
+}
+
+.ec-event .ec-bullet {
+	background-color: red;
 }

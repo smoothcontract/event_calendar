@@ -234,7 +234,7 @@ module EventCalendar
             add_arrows event
 
             if no_event_bg? event
-              self << %(<div class="ec-bullet" style="background-color: #{event.color};"></div>)
+              self << %(<div class="ec-bullet"></div>)
             end
 
             if @block
@@ -267,17 +267,16 @@ module EventCalendar
       def cell_attributes event
         if no_event_bg? event
           self << %(ec-event-no-bg" )
-          self << %(style="color: #{event.color}; )
         else
           self << %(ec-event-bg" )
-          self << %(style="background-color: #{event.color}; )
         end
 
-        self << %(padding-top: #{options[:event_padding_top]}px; )
+        # self << %(padding-top: #{options[:event_padding_top]}px; )
+        self << %(style="padding-top: #{options[:event_padding_top]}px; )
         self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
         if options[:use_javascript]
           # custom attributes needed for javascript event highlighting
-          self << %(data-event-id="#{event.id}" data-event-class="#{css_for(event)}" data-color="#{event.color}" )
+          self << %(data-event-id="#{event.id}" data-event-class="#{css_for(event)}" )
         end
       end
 
