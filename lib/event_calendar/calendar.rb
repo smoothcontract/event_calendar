@@ -320,12 +320,9 @@ module EventCalendar
 
       def empty_cell_and_container
         self << %(<td class="ec-event-cell ec-no-event-cell" )
-        self << %(style="padding-top: #{options[:event_margin]}px;">)
-        self << %(<div class="ec-event" )
-        self << %(style="padding-top: #{options[:event_padding_top]}px; )
-        self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
-        self << %(>)
-        self << %(&nbsp;</div></td>)
+        self << %(style="padding-top: #{options[:event_margin]}px; )
+        self << %(height: #{options[:event_height]}px;">)
+        self << %(&nbsp;</td>)
       end
       
       # calculate the height of each row
