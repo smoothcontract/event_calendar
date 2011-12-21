@@ -65,7 +65,7 @@ module EventCalendar
 
       def table_header_and_links
         if options[:show_header]
-          self << %(<table class="ec-calendar-header" cellpadding="0" cellspacing="0">)
+          self << %(<table class="ec-calendar-header">)
           self << %(<thead><tr>)
           if options[:previous_month_text] or options[:next_month_text]
             self << %(<th colspan="2" class="ec-month-nav ec-previous-month">#{options[:previous_month_text]}</th>)
@@ -98,7 +98,7 @@ module EventCalendar
       end
 
       def add_day_names
-        self << %(<table class="ec-day-names" style="height: #{options[:day_names_height]}px;" cellpadding="0" cellspacing="0">)
+        self << %(<table class="ec-day-names" style="height: #{options[:day_names_height]}px;">)
         self << %(<tbody><tr>)
         day_names.each do |day_name|
           self << %(<th class="ec-day-name" title="#{day_name}">#{day_name}</th>)
@@ -173,7 +173,7 @@ module EventCalendar
       end
 
       def week_background_table
-        self << %(<table class="ec-row-bg" cellpadding="0" cellspacing="0">)
+        self << %(<table class="ec-row-bg">)
         self << %(<tbody><tr>)
         first_day_of_week.upto(last_day_of_week) do |day|
           today_class = (day == Date.today) ? "ec-today-bg" : ""
@@ -184,7 +184,7 @@ module EventCalendar
       end
 
       def calendar_row
-        self << %(<table class="ec-row-table" cellpadding="0" cellspacing="0">)
+        self << %(<table class="ec-row-table">)
         self << %(<tbody>)
         yield
         self << %(</tbody></table>)

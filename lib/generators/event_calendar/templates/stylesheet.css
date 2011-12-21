@@ -22,6 +22,10 @@
   padding: 0;
   border-bottom: 1px solid #d5d5d5;
 }
+.ec-calendar table {
+	border-collapse: collapse;
+	border-spacing:0;
+}
 
 /* Month name header & links */
 .ec-calendar-header {
