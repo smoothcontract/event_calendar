@@ -265,6 +265,7 @@ module EventCalendar
       end
 
       def cell_attributes event
+        self << %(#{event.style} ) if event.style
         if no_event_bg? event
           self << %(ec-event-no-bg" )
         else

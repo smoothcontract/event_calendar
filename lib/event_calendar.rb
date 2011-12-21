@@ -142,8 +142,9 @@ module EventCalendar
       self[:all_day]
     end
     
-    def color
-      self[:color] || '#9aa4ad'
+    # Define additional space delimited CSS classes for styling individual events
+    def style
+      nil
     end
   
     def days
