@@ -59,6 +59,9 @@ module EventCalendar
         :next_month_text => nil,
         :event_strips => [],
 
+        # day_link may be a block that takes text, date and day_action parameters
+        :day_link => nil,
+
         # it would be nice to have these in the CSS file
         # but they are needed to perform height calculations
         :width => nil,
@@ -81,12 +84,6 @@ module EventCalendar
 
       options = defaults.merge options
       Calendar.new(options, block).to_s
-    end
-
-
-    # override this in your own helper for greater control
-    def day_link(text, date, day_action)
-      link_to(text, params.merge(:action => day_action, :year => date.year, :month => date.month, :day => date.day), :class => 'ec-day-link')
     end
 
     # default html for displaying an event's time

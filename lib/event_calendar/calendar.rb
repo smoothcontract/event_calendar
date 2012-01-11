@@ -208,6 +208,14 @@ module EventCalendar
         self << %(</tr>)
       end
 
+      # Pass a block in :day_link option to override this method
+      def day_link(text, date, day_action)
+        if options[:day_link]
+          options[:day_link].call(text, date, day_action)
+        else
+          link_to(text, params.merge(:action => day_action, :year => date.year, :month => date.month, :day => date.day), :class => 'ec-day-link')
+        end
+      end
 
       def event_row_for_this_day strip
         self << %(<tr>)
