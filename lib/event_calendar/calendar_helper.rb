@@ -80,10 +80,8 @@ module EventCalendar
     end
 
     def calendar(options = {}, &block)
-      block ||= Proc.new {|d| nil}
-
       options = defaults.merge options
-      Calendar.new(options, block).to_s
+      Calendar.new(options, &block).to_s
     end
 
     # default html for displaying an event's time

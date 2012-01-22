@@ -1,8 +1,8 @@
 module EventCalendar
   module CalendarHelper
     class Calendar
-      def initialize options, block=nil
-        setup options, block
+      def initialize options, &block
+        setup options, &block
 
         outer_calendar_container do
           table_header_and_links
@@ -28,14 +28,14 @@ module EventCalendar
       private
 
       attr_reader :row_num, :first_day_of_week, :last_day_of_week,
-        :last_day_of_cal, :top, :first, :last, :options
+        :last_day_of_cal, :top, :first, :last, :options, :block
 
       # check if we should display without a background color
       def no_event_bg? event
         options[:use_all_day] && !event.all_day && event.days == 0
       end
 
-      def setup options, block
+      def setup options, &block
         # default month name for the given number
         if options[:show_header]
           options[:month_name_text] ||= I18n.translate(:'date.month_names')[options[:month]]
@@ -51,7 +51,7 @@ module EventCalendar
         end
 
         @options = options
-        @block = block
+        @block = block if block_given?
         @html = ""
       end
 
