@@ -35,7 +35,7 @@ module EventCalendar
         options[:use_all_day] && !event.all_day && event.days == 0
       end
 
-      def setup options
+      def setup options, block
         # default month name for the given number
         if options[:show_header]
           options[:month_name_text] ||= I18n.translate(:'date.month_names')[options[:month]]
