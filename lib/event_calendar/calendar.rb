@@ -2,7 +2,7 @@ module EventCalendar
   module CalendarHelper
     class Calendar
       def initialize options, block=nil
-        setup options
+        setup options, block
 
         outer_calendar_container do
           table_header_and_links
@@ -51,6 +51,7 @@ module EventCalendar
         end
 
         @options = options
+        @block = block
         @html = ""
       end
 
