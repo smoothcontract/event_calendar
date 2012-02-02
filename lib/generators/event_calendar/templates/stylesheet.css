@@ -204,6 +204,13 @@ a.ec-day-link {
   padding-right: 3px;
 }
 
+/* Icon - override as required with a background image */
+.ec-icon {
+background: none no-repeat;
+width: 16px;
+height: 14px;
+float: left;
+}
 
 /* Left and right arrows */
 /* Doesn't work in IE6, use bg images instead */

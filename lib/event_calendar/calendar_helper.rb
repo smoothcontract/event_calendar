@@ -54,6 +54,7 @@ module EventCalendar
         :first_day_of_week => 0,
         :show_today => true,
         :show_header => true,
+        :show_icons => false,
         :month_name_text => (Time.zone || Time).now.strftime("%B %Y"),
         :previous_month_text => nil,
         :next_month_text => nil,

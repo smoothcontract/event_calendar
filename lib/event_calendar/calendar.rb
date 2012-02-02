@@ -242,9 +242,8 @@ module EventCalendar
           cell_container event do
             add_arrows event
 
-            if no_event_bg? event
-              self << %(<div class="ec-bullet"></div>)
-            end
+            self << %(<div class="ec-icon"></div>) if options[:show_icon]
+            self << %(<div class="ec-bullet"></div>) if no_event_bg? event
 
             if @block
               # add the additional html that was passed as a block to this helper
@@ -281,7 +280,6 @@ module EventCalendar
           self << %(ec-event-bg" )
         end
 
-        # self << %(padding-top: #{options[:event_padding_top]}px; )
         self << %(style="padding-top: #{options[:event_padding_top]}px; )
         self << %(height: #{options[:event_height] - options[:event_padding_top]}px;" )
         if options[:use_javascript]
