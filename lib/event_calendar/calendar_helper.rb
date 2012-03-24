@@ -60,9 +60,6 @@ module EventCalendar
         :next_month_text => nil,
         :event_strips => [],
 
-        # table_header_content may be a block to override month text
-        :table_header_content => nil,
-
         # day_link may be a block that takes text, date and day_action parameters
         :day_link => nil,
 
@@ -80,6 +77,7 @@ module EventCalendar
         :use_javascript => true,
         :link_to_day_action => false
       }
+
     end
 
     def calendar(options = {}, &block)
