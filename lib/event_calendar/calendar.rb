@@ -68,6 +68,16 @@ module EventCalendar
         if options[:show_header]
           self << %(<table class="ec-calendar-header">)
           self << %(<thead><tr>)
+          table_header_content
+          self << %(</tr></thead></table>)
+        end
+      end
+
+      # Pass a block in :table_header_content to override this method
+      def table_header_content
+        if options[:table_header_content]
+          self << options[:table_header_content].call
+        else
           if options[:previous_month_text] or options[:next_month_text]
             self << %(<th colspan="2" class="ec-month-nav ec-previous-month">#{options[:previous_month_text]}</th>)
             colspan = 3
@@ -80,8 +90,6 @@ module EventCalendar
           if options[:next_month_text]
             self << %(<th colspan="2" class="ec-month-nav ec-next-month">#{options[:next_month_text]}</th>)
           end
-          self << %(</tr></thead></table>)
-        end
       end
 
       def height
